@@ -5,7 +5,7 @@ import ast
 import logging
 
 from ics2000.Command import decrypt, Command
-from ics2000.Devices import Device, Dimmer, Optional
+from ics2000.Devices import Device, Dimmer, Optional, Sunshade
 
 
 def constraint_int(inp, min_val, max_val) -> int:
@@ -84,6 +84,8 @@ class Hub:
                     self._devices.append(Device(name, entity_id, self))
                 if dev == DeviceType.DIMMABLE_LAMP:
                     self._devices.append(Dimmer(name, entity_id, self))
+                if dev == DeviceType.SUNSHADE:
+                    self._devices.append(Sunshade(name, entity_id, self))
             else:
                 pass  # TODO: log something here
 
@@ -98,6 +100,8 @@ class Hub:
         response = requests.get(url, params=params)
         if 200 != response.status_code:
             raise CoreException(f'Could not send command {command}: {response.text}')
+        
+    # Lamp
 
     def turn_off(self, entity):
         cmd = self.simple_command(entity, 0, 0)
@@ -124,6 +128,20 @@ class Hub:
 
     def zigbee_switch(self, entity, power):
         cmd = self.simple_command(entity, 3, (str(1) if power else str(0)))
+        self.send_command(cmd.getcommand())
+
+    # Sunshade
+
+    def open(self, entity):
+        cmd = self.simple_command(entity, 0, 1)
+        self.send_command(cmd.getcommand())
+
+    def close(self, entity):
+        cmd = self.simple_command(entity, 2, 1)
+        self.send_command(cmd.getcommand())
+
+    def stop(self, entity):
+        cmd = self.simple_command(entity, 1, 1)
         self.send_command(cmd.getcommand())
 
     def get_device_status(self, entity) -> []:
@@ -167,6 +185,7 @@ class DeviceType(enum.Enum):
     LAMP = 1
     DIMMER = 2
     OPEN_CLOSE = 3
+    SUNSHADE = 23
     DIMMABLE_LAMP = 24
 
 
