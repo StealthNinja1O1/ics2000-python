@@ -5,7 +5,7 @@ import ast
 import logging
 
 from ics2000.Command import decrypt, Command
-from ics2000.Devices import Device, Dimmer, Optional, Sunshade
+from ics2000.Devices import Device, Dimmer, Optional, Sunshade, Zigbee_Lamp
 
 
 def constraint_int(inp, min_val, max_val) -> int:
@@ -86,6 +86,8 @@ class Hub:
                     self._devices.append(Dimmer(name, entity_id, self))
                 if dev == DeviceType.SUNSHADE:
                     self._devices.append(Sunshade(name, entity_id, self))
+                if dev == DeviceType.ZIGBEE_LAMP:
+                    self._devices.append(Zigbee_Lamp(name, entity_id, self))
             else:
                 pass  # TODO: log something here
 
