@@ -116,6 +116,7 @@ class Hub:
         cmd = self.simple_command(entity, 1, level)
         self.send_command(cmd.getcommand())
 
+    # Zigbee light
     def zigbee_color_temp(self, entity, color_temp):
         color_temp = constraint_int(color_temp, 0, 600)
         cmd = self.simple_command(entity, 9, color_temp)
@@ -128,6 +129,14 @@ class Hub:
 
     def zigbee_switch(self, entity, power):
         cmd = self.simple_command(entity, 3, (str(1) if power else str(0)))
+        self.send_command(cmd.getcommand())
+
+    def zigbee_on(self, entity):
+        cmd = self.simple_command(entity, 3, 1)
+        self.send_command(cmd.getcommand())
+    
+    def zigbee_off(self, entity):
+        cmd = self.simple_command(entity, 3, 0)
         self.send_command(cmd.getcommand())
 
     # Sunshade
@@ -187,6 +196,7 @@ class DeviceType(enum.Enum):
     OPEN_CLOSE = 3
     SUNSHADE = 23
     DIMMABLE_LAMP = 24
+    ZIGBEE_LAMP = 40
 
 
 def get_hub(mac, email, password) -> Optional[Hub]:
